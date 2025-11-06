@@ -1,6 +1,6 @@
 import { signOut } from "firebase/auth";
 import { auth } from "@/utils/firebaseConfig";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/useAuth";
 
 export default function Dashboard() {
   const { user } = useAuth();

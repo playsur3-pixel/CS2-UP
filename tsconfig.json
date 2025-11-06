@@ -14,9 +14,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+
     "jsx": "react-jsx",
+
+    // ✅ fusion correcte ici :
+    "types": ["vite/client", "react", "react-dom"],
+
     "baseUrl": ".",
-    "types": ["vite/client"],
     "paths": {
       "@/*": ["src/*"]
     }

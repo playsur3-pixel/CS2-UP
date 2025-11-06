@@ -1,8 +1,9 @@
 import { useState, FormEvent } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
 import { auth } from "@/utils/firebaseConfig";
 
-export default function Login() {
+export default function Login(): JSX.Element {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -11,12 +12,16 @@ export default function Login() {
     e.preventDefault();
     setError("");
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err: any) {
-      setError(err.message);
+  await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      if (err instanceof FirebaseError) {
+        setError(err.message);
+      } else {
+        console.error("Erreur inconnue :", err);
+      }
     }
-  };
 
+    
   return (
     <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,_#0f172a_0%,_#020617_45%,_#0f172a_100%)] px-4">
       <div className="w-full max-w-md bg-slate-900/80 backdrop-blur-xl rounded-xl p-8 shadow-2xl border border-slate-700/50">
@@ -73,4 +78,5 @@ export default function Login() {
       </div>
     </div>
   );
+}
 }
