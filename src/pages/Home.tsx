@@ -1,72 +1,81 @@
 import { useState, FormEvent } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
+import { Link } from "react-router-dom";
 import { auth } from "@/utils/firebaseConfig";
 
 export default function Home(): JSX.Element {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      if (err instanceof FirebaseError) {
-        setError(err.message);
-      } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Erreur inconnue lors de la connexion.");
-      }
-    } finally {
-      setLoading(false);
+    } catch (err: unknown) {
+      if (err instanceof FirebaseError) setError(err.message);
+      else if (err instanceof Error) setError(err.message);
+      else setError("Erreur inconnue lors de la connexion.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-slate-950 via-slate-900 to-amber-900 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-slate-900/70 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-slate-800">
+    <div className="relative min-h-screen flex items-center justify-center bg-slate-950 text-white overflow-hidden">
+      {/* background */}
+      <div
+        className="absolute inset-0 bg-cover bg-center blur-sm opacity-30"
+        style={{
+          // mets ton image dans /public
+          backgroundImage: "url('/cs-background.png')",
+        }}
+      />
+      {/* overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/90" />
+
+      {/* panneau */}
+      <div className="relative z-10 w-full max-w-md p-8 bg-slate-900/80 backdrop-blur-xl rounded-xl border border-slate-700/40 shadow-xl">
         <div className="text-center mb-8">
-          <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-orange-500 flex items-center justify-center text-white text-2xl font-bold">
-            ⦿
-          </div>
-          <h1 className="text-2xl font-bold text-white">CS2 COACH</h1>
-          <p className="text-slate-400 text-sm mt-1">
-            PERFORMANCE TRACKING SYSTEM
+          <img
+            src="/logo-cs-home.svg" // ✅ ton image dans /public/cs2-logo.png
+            alt="Logo CS2-UP"
+            className="w-20 h-20 mx-auto mb-3 opacity-90"
+          />
+          <h1 className="text-4xl font-extrabold tracking-wide text-orange-500">
+            CS2-UP
+          </h1>
+          <p className="text-slate-300 mt-2 text-sm uppercase tracking-wider">
+            Comprendre pour mieux step-up
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-slate-200 text-sm mb-1">
-              Adresse e-mail
-            </label>
+            <label className="block text-sm mb-1 text-slate-300">Email</label>
             <input
               type="email"
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-orange-500"
-              placeholder="exemple@mail.com"
+              placeholder="Votre mail"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-orange-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
             />
           </div>
 
           <div>
-            <label className="block text-slate-200 text-sm mb-1">
+            <label className="block text-sm mb-1 text-slate-300">
               Mot de passe
             </label>
             <input
               type="password"
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-orange-500"
               placeholder="••••••••"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-orange-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
             />
           </div>
 
@@ -78,20 +87,28 @@ export default function Home(): JSX.Element {
 
           <button
             type="submit"
-            disabled={loading}
-            className={`w-full transition font-semibold py-2 rounded-lg text-white ${
-              loading
-                ? "bg-orange-700 cursor-not-allowed"
-                : "bg-orange-500 hover:bg-orange-600"
-            }`}
+            className="w-full bg-orange-500 hover:bg-orange-600 transition text-white font-semibold py-2 rounded-lg"
           >
-            {loading ? "Connexion..." : "Se connecter"}
+            Se connecter
           </button>
         </form>
 
-        <p className="text-center mt-4 text-slate-400 text-sm">
-          Mot de passe oublié ?
-        </p>
+        <div className="flex flex-col items-center mt-5 space-y-2">
+          <Link
+            to="/creation"
+            className="text-sm text-orange-400 hover:text-orange-300 transition font-semibold"
+          >
+            Créer son compte
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => alert("Fonctionnalité à venir")}
+            className="text-sm text-slate-400 hover:text-slate-200 transition font-semibold"
+          >
+            Mot de passe oublié ?
+          </button>
+        </div>
       </div>
     </div>
   );
